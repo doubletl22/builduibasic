@@ -1,11 +1,17 @@
 package com.example.builduibasic
 
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.runtime.setValue // Cho state delegation
-import androidx.compose.runtime.mutableStateOf // Cho state
-import androidx.compose.material3.OutlinedTextField // Import cho OutlinedTextField
-import androidx.compose.runtime.getValue // Cho state delegation
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -26,7 +32,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack // Icon back cho LTR/RTL
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -71,14 +77,14 @@ object AppRoutes {
     const val TEXTFIELD_DETAIL_SCREEN = "textfield_detail_screen"
     const val ROW_LAYOUT_DETAIL_SCREEN = "row_layout_detail_screen"
     const val COLUMN_LAYOUT_DETAIL_SCREEN = "column_layout_detail_screen"
+    const val PASSWORDFIELD_DETAIL_SCREEN = "passwordfield_detail_screen"
 }
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            // YourAppTheme { // Thay thế bằng Theme của bạn nếu có
-            MaterialTheme { // Sử dụng MaterialTheme cơ bản
+            MaterialTheme {
                 AppNavigation()
             }
             // }
@@ -111,13 +117,16 @@ fun AppNavigation() {
         composable(AppRoutes.COLUMN_LAYOUT_DETAIL_SCREEN) {
             ColumnLayoutDetailScreen(navController = navController)
         }
+        composable(AppRoutes.PASSWORDFIELD_DETAIL_SCREEN) {
+            PasswordFieldDetailScreen(navController = navController)
+        }
     }
 }
 
 // --- UIComponentsListScreen điều hướng và các thành phần con (cập nhật) ---
 
 @Composable
-fun UIComponentsListScreen(navController: NavController) { // Thêm NavController
+fun UIComponentsListScreen(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -169,7 +178,11 @@ fun UIComponentsListScreen(navController: NavController) { // Thêm NavControlle
 
             DisplayItemCard(
                 title = "PasswordField",
-                description = "Input field for passwords")
+                description = "Input field for passwords",
+                onClick = {
+                    navController.navigate(AppRoutes.PASSWORDFIELD_DETAIL_SCREEN)
+                }
+            )
 
 
         Spacer(modifier = Modifier.height(24.dp))
@@ -758,6 +771,91 @@ fun ColumnLayoutDetailScreenPreview() {
     MaterialTheme {
         Surface {
             ColumnLayoutDetailScreen(navController = rememberNavController())
+        }
+    }
+}
+
+//----passwordfield---
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun PasswordFieldDetailScreen(navController: NavController) {
+    var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        "PasswordField",
+                        color = primaryTitleColor, // Sử dụng màu đã định nghĩa
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back",
+                            tint = primaryTitleColor // Sử dụng màu đã định nghĩa
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = Color.Transparent
+                )
+            )
+        }
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            OutlinedTextField(
+                value = password,
+                onValueChange = { password = it },
+                label = { Text("Nhập mật khẩu") },
+                singleLine = true,
+                visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
+                    val image = if (passwordVisible)
+                        Icons.Filled.Visibility
+                    else Icons.Filled.VisibilityOff
+
+                    // Mô tả cho accessibility
+                    val description = if (passwordVisible) "Ẩn mật khẩu" else "Hiện mật khẩu"
+
+                    IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                        Icon(imageVector = image, description)
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Bạn có thể thêm Text ở đây để hiển thị mật khẩu nếu passwordVisible là true
+            // Ví dụ:
+            // if (passwordVisible) {
+            //     Spacer(modifier = Modifier.height(16.dp))
+            //     Text(
+            //         text = "Mật khẩu hiện tại: $password",
+            //         fontSize = 14.sp
+            //     )
+            // }
+        }
+    }
+}
+
+// Preview cho PasswordFieldDetailScreen
+@Preview(showBackground = true, backgroundColor = 0xFFFFFFFF)
+@Composable
+fun PasswordFieldDetailScreenPreview() {
+    MaterialTheme {
+        Surface {
+            PasswordFieldDetailScreen(navController = rememberNavController())
         }
     }
 }

@@ -60,6 +60,8 @@ dependencies {
     //thêm các dependency khác ở đây
     implementation(libs.androidx.navigation.compose)
     implementation(libs.coil.compose)
+    implementation(libs.androidx.material.icons.core)
+    implementation(libs.androidx.material.icons.extended)
    // implementation(libs.navigation.compose)
     //implementation(libs.material.icons.extended)
 
