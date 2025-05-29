@@ -1,5 +1,7 @@
 package com.example.builduibasic
 
+import androidx.compose.foundation.lazy.LazyColumn
+//import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.foundation.text.KeyboardOptions
@@ -28,9 +30,9 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.rememberScrollState
+//import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
+//import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
@@ -78,6 +80,7 @@ object AppRoutes {
     const val ROW_LAYOUT_DETAIL_SCREEN = "row_layout_detail_screen"
     const val COLUMN_LAYOUT_DETAIL_SCREEN = "column_layout_detail_screen"
     const val PASSWORDFIELD_DETAIL_SCREEN = "passwordfield_detail_screen"
+    const val BUTTON_DETAIL = "button_detail"
 }
 
 class MainActivity : ComponentActivity() {
@@ -87,7 +90,6 @@ class MainActivity : ComponentActivity() {
             MaterialTheme {
                 AppNavigation()
             }
-            // }
         }
     }
 }
@@ -120,62 +122,109 @@ fun AppNavigation() {
         composable(AppRoutes.PASSWORDFIELD_DETAIL_SCREEN) {
             PasswordFieldDetailScreen(navController = navController)
         }
+        //composable(AppRoutes.BUTTON_DETAIL) {
+         //   ButtonDetailScreen(navController = navController)
+        //}
     }
 }
+
 
 // --- UIComponentsListScreen điều hướng và các thành phần con (cập nhật) ---
 
 @Composable
 fun UIComponentsListScreen(navController: NavController) {
-    Column(
+    LazyColumn( // Changed from Column to LazyColumn
         modifier = Modifier
             .fillMaxSize()
-            .verticalScroll(rememberScrollState())
-            .padding(16.dp)
+            // .verticalScroll(rememberScrollState()) // Removed: LazyColumn handles scrolling
+            .padding(horizontal = 16.dp), // Apply horizontal padding to the LazyColumn itself
+        contentPadding = PaddingValues(vertical = 16.dp) // Apply vertical padding to the content
     ) {
-        Text(
-            text = "UI Components List",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold,
-            color = primaryTitleColor,
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 24.dp)
-        )
-
-        CategorySection(title = "Display") {
-            DisplayItemCard(
-                title = "Text",
-                description = "Displays text",
-                onClick = {
-                    navController.navigate(AppRoutes.TEXT_DETAIL) // Điều hướng khi nhấp
-                }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-
-            DisplayItemCard(
-                title = "Image",
-                description = "Displays an image",
-                onClick = {
-                    navController.navigate(AppRoutes.IMAGES_SCREEN)
-                }
+        item { // Wrap title in an item block
+            Text(
+                text = "UI Components List",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Bold,
+                color = primaryTitleColor,
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 24.dp) // Keep specific padding for this item
             )
         }
 
-        Spacer(modifier = Modifier.height(24.dp))
+        item { // Wrap CategorySection in an item block
+            CategorySection(title = "Display") {
+                DisplayItemCard(
+                    title = "Text",
+                    description = "Displays text",
+                    onClick = {
+                        navController.navigate(AppRoutes.TEXT_DETAIL) // Điều hướng khi nhấp
+                    }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
 
-        CategorySection(title = "Input") {
-            DisplayItemCard(
-                title = "TextField",
-                description = "Input field for text",
-                onClick = {
-                    navController.navigate(AppRoutes.TEXTFIELD_DETAIL_SCREEN)
-                }
-            )
+                DisplayItemCard(
+                    title = "Image",
+                    description = "Displays an image",
+                    onClick = {
+                        navController.navigate(AppRoutes.IMAGES_SCREEN)
+                    }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                DisplayItemCard(
+                    title = "Button",
+                    description = "Displays a clickable button",
+
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                DisplayItemCard(
+                    title = "Checkbox",
+                    description = "Checkbox component"
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                DisplayItemCard(
+                    title = "RaidoButton",
+                    description = "Radio Button"
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                DisplayItemCard(
+                    title = "Icon",
+                    description = "Display an icon"
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+                DisplayItemCard(
+                    title = "ProgessBar",
+                    description = "Progess indicator"
+                )
+            }
         }
-            Spacer(modifier = Modifier.height(12.dp))
 
+        item { // Wrap Spacer in an item block
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        item { // Wrap CategorySection in an item block
+            CategorySection(title = "Input") {
+                DisplayItemCard(
+                    title = "TextField",
+                    description = "Input field for text",
+                    onClick = {
+                        navController.navigate(AppRoutes.TEXTFIELD_DETAIL_SCREEN)
+                    }
+                )
+                // Note: The PasswordField was originally outside this CategorySection's content.
+                // To keep the original visual structure, it will be in its own item block later.
+                // If it should be *inside* "Input", move the PasswordField DisplayItemCard here.
+            }
+        }
+
+        item { // Wrap Spacer for PasswordField in an item block
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+
+        item { // Wrap DisplayItemCard for PasswordField in an item block
             DisplayItemCard(
                 title = "PasswordField",
                 description = "Input field for passwords",
@@ -183,29 +232,36 @@ fun UIComponentsListScreen(navController: NavController) {
                     navController.navigate(AppRoutes.PASSWORDFIELD_DETAIL_SCREEN)
                 }
             )
-
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        CategorySection(title = "Layout") {
-            DisplayItemCard(
-                title = "Column",
-                description = "Arranges elements vertically",
-                onClick = {
-                    navController.navigate(AppRoutes.COLUMN_LAYOUT_DETAIL_SCREEN)
-                }
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-
-            DisplayItemCard(
-                title = "Row",
-                description = "Arranges elements horizontally",
-                onClick = {
-                    navController.navigate(AppRoutes.ROW_LAYOUT_DETAIL_SCREEN)
-                }
-            )
         }
 
+        item { // Wrap Spacer in an item block
+            Spacer(modifier = Modifier.height(24.dp))
+        }
+
+        item { // Wrap CategorySection in an item block
+            CategorySection(title = "Layout") {
+                DisplayItemCard(
+                    title = "Column",
+                    description = "Arranges elements vertically",
+                    onClick = {
+                        navController.navigate(AppRoutes.COLUMN_LAYOUT_DETAIL_SCREEN)
+                    }
+                )
+                Spacer(modifier = Modifier.height(12.dp))
+
+                DisplayItemCard(
+                    title = "Row",
+                    description = "Arranges elements horizontally",
+                    onClick = {
+                        navController.navigate(AppRoutes.ROW_LAYOUT_DETAIL_SCREEN)
+                    }
+                )
+            }
+        }
+        // The final Spacer might not be strictly necessary as contentPadding.bottom will handle space at the end.
+        // item {
+        //     Spacer(modifier = Modifier.height(16.dp)) // Example if extra bottom space is desired
+        // }
     }
 }
 
@@ -482,7 +538,7 @@ fun ImagesScreen(navController: NavController) {
                 .fillMaxSize()
                 .padding(innerPadding)
                 .padding(horizontal = 16.dp, vertical = 8.dp) // Padding cho nội dung
-                .verticalScroll(rememberScrollState()) // Cho phép cuộn
+                 // Cho phép cuộn
         ) {
 
             Image(
